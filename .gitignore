@@ -1,0 +1,22 @@
+# Node
+frontend/node_modules/
+backend/node_modules/
+
+# Builds
+frontend/dist/
+
+# Python venv
+ml_service/venv/
+
+# Uploads and local db
+uploads/
+backend/dev.sqlite
+
+# Environment files
+.env
+backend/.env
+*.env
+
+# OS clutter
+.DS_Store
+Thumbs.db
