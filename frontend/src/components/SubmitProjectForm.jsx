@@ -12,6 +12,7 @@ function SubmitProjectForm({ apiBase, onSubmitted }) {
   });
   const [token, setToken] = useState("");
   const [status, setStatus] = useState("");
+  const [file, setFile] = useState(null);
 
   function handleChange(e) {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -21,9 +22,20 @@ function SubmitProjectForm({ apiBase, onSubmitted }) {
     e.preventDefault();
     setStatus("Submitting...");
     try {
-      await axios.post(`${apiBase}/api/projects`, form, {
+      const authToken = token || localStorage.getItem("token") || "";
+      let fileUrl = form.fileUrl;
+      if (file) {
+        const formData = new FormData();
+        formData.append("file", file);
+        const up = await axios.post(`${apiBase}/api/upload/file`, formData, {
+          headers: { Authorization: authToken ? `Bearer ${authToken}` : "" }
+        });
+        fileUrl = up.data.fileUrl;
+      }
+
+      await axios.post(`${apiBase}/api/projects`, { ...form, fileUrl }, {
         headers: {
-          Authorization: token ? `Bearer ${token}` : ""
+          Authorization: authToken ? `Bearer ${authToken}` : ""
         }
       });
       setStatus("Submitted successfully");
@@ -35,6 +47,7 @@ function SubmitProjectForm({ apiBase, onSubmitted }) {
         academicLevel: "UG",
         year: new Date().getFullYear()
       });
+      setFile(null);
       onSubmitted && onSubmitted();
     } catch (err) {
       setStatus(err.response?.data?.message || "Error submitting project");
@@ -96,6 +109,7 @@ function SubmitProjectForm({ apiBase, onSubmitted }) {
         value={form.year}
         onChange={handleChange}
       />
+      <input className="input" type="file" onChange={(e) => setFile(e.target.files?.[0] || null)} />
       <button className="button" type="submit">Submit Project</button>
       {status && <p className="status">{status}</p>}
     </form>

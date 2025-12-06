@@ -8,11 +8,14 @@ export const Project = sequelize.define("Project", {
   domain: { type: DataTypes.STRING, allowNull: false },
   abstract: { type: DataTypes.TEXT, allowNull: false },
   techStack: { type: DataTypes.STRING, allowNull: true },
+  department: { type: DataTypes.STRING, allowNull: true },
   institution: { type: DataTypes.STRING, allowNull: false },
   academicLevel: { type: DataTypes.ENUM("UG", "PG", "PhD"), allowNull: false },
   year: { type: DataTypes.INTEGER, allowNull: false },
   plagiarismScore: { type: DataTypes.FLOAT, allowNull: true },
-  fileUrl: { type: DataTypes.STRING, allowNull: true }
+  fileUrl: { type: DataTypes.STRING, allowNull: true },
+  status: { type: DataTypes.ENUM("pending", "approved", "rejected"), allowNull: false, defaultValue: "pending" },
+  grade: { type: DataTypes.STRING, allowNull: true }
 });
 
 User.hasMany(Project, { foreignKey: "ownerId" });
