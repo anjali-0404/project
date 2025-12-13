@@ -1,6 +1,7 @@
 
 import express from "express";
 import fetch from "node-fetch";
+import { Op } from "sequelize";
 import { Project } from "../models/Project.js";
 import { authRequired, requireRole } from "../middleware/authMiddleware.js";
 
@@ -10,13 +11,15 @@ router.get("/", async (req, res) => {
   try {
     const { q, domain, institution, year, tech, department, status, ownerId } = req.query;
     const where = {};
-    if (domain) where.domain = domain;
-    if (institution) where.institution = institution;
-    if (department) where.department = department;
+    
+    // Use case-insensitive matching for SQLite (LIKE is case-insensitive in SQLite by default)
+    if (domain) where.domain = { [Op.like]: `%${domain}%` };
+    if (institution) where.institution = { [Op.like]: `%${institution}%` };
+    if (department) where.department = { [Op.like]: `%${department}%` };
     if (status) where.status = status;
     if (year) where.year = +year;
-    if (tech) where.techStack = { [Project.sequelize.Op.iLike]: `%${tech}%` };
-    if (q) where.title = { [Project.sequelize.Op.iLike]: `%${q}%` };
+    if (tech) where.techStack = { [Op.like]: `%${tech}%` };
+    if (q) where.title = { [Op.like]: `%${q}%` };
     if (ownerId) where.ownerId = +ownerId;
 
     const projects = await Project.findAll({ where, order: [["year", "DESC"]] });

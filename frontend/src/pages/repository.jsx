@@ -8,8 +8,23 @@ export default function Repository() {
   const [filters, setFilters] = useState({ q: "", domain: "", institution: "", department: "", year: "", tech: "" });
 
   async function load() {
-    const res = await axios.get(`${API_BASE}/api/projects`, { params: filters });
-    setProjects(res.data);
+    try {
+      // Remove empty filters
+      const cleanFilters = {};
+      Object.keys(filters).forEach(key => {
+        if (filters[key] && filters[key].toString().trim()) {
+          cleanFilters[key] = filters[key];
+        }
+      });
+      
+      console.log("Searching with filters:", cleanFilters);
+      const res = await axios.get(`${API_BASE}/api/projects`, { params: cleanFilters });
+      console.log("Results:", res.data);
+      setProjects(res.data);
+    } catch (err) {
+      console.error("Error loading projects:", err);
+      alert("Error: " + (err.response?.data?.message || err.message));
+    }
   }
 
   useEffect(() => { load(); }, []);

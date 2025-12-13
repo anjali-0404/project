@@ -10,11 +10,23 @@ export default function AuthRegister() {
 
   async function register(e) {
     e.preventDefault();
+    
+    // Validation
+    if (!form.name.trim()) { setStatus("❌ Name is required"); return; }
+    if (!form.email.trim()) { setStatus("❌ Email is required"); return; }
+    if (!form.password) { setStatus("❌ Password is required"); return; }
+    if (form.password.length < 6) { setStatus("❌ Password must be at least 6 characters"); return; }
+    if (!form.institution.trim()) { setStatus("❌ Institution is required"); return; }
+    
     setStatus("Registering…");
     try {
-      await axios.post(`${API_BASE}/api/auth/register`, form);
-      setStatus("Registered. Please login.");
-    } catch (err) { setStatus("Error registering"); }
+      const response = await axios.post(`${API_BASE}/api/auth/register`, form);
+      setStatus("✅ Registered successfully! Redirecting to login...");
+      setTimeout(() => window.location.href = "/auth/login", 2000);
+    } catch (err) {
+      const errorMsg = err.response?.data?.message || err.message || "Error registering";
+      setStatus(`❌ ${errorMsg}`);
+    }
   }
 
   return (

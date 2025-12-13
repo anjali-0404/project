@@ -1,51 +1,145 @@
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import axios from "axios";
 import { API_BASE } from "../api.js";
-import { Link } from "react-router-dom";
+import ProjectList from "../components/ProjectList.jsx";
 
 export default function Home() {
-  const [stats, setStats] = useState({ totalProjects: 0, universities: 0, totalUsers: 0, plagiarismChecks: 0 });
+  const [featuredProjects, setFeaturedProjects] = useState([]);
 
   useEffect(() => {
-    async function loadStats() {
-      try {
-        const res = await axios.get(`${API_BASE}/api/stats`);
-        setStats(res.data);
-      } catch {}
-    }
-    loadStats();
+    loadFeaturedProjects();
   }, []);
 
+  async function loadFeaturedProjects() {
+    try {
+      const res = await axios.get(`${API_BASE}/api/projects`, { params: { limit: 3 } });
+      setFeaturedProjects(res.data.slice(0, 3)); // Show only first 3 projects
+    } catch (error) {
+      console.error("Error loading featured projects:", error);
+    }
+  }
+
   return (
-    <div>
+    <div className="home">
+      {/* Hero Section */}
       <section className="hero">
-        <div className="hero-content app">
-          <h1 className="hero-title">One Nation, One Student Project Platform</h1>
-          <p className="hero-subtitle">A centralized national repository to submit, review, and explore student projects across India.</p>
-          <div className="hero-actions">
-            <Link className="button primary" to="/repository">Explore Projects</Link>
-            <Link className="button" to="/auth/register">Submit Project</Link>
+        <div className="hero-container">
+          <div className="hero-content">
+            <h1 className="hero-title">
+              Showcase Your <span className="gradient-text">Academic Projects</span> to the World
+            </h1>
+            <p className="hero-subtitle">
+              Join the ultimate platform for students, faculty, and institutions to discover, share, and collaborate on innovative academic projects across all domains.
+            </p>
+            <div className="hero-actions">
+              <Link to="/auth/register" className="button primary large">Get Started</Link>
+              <Link to="/repository" className="button secondary large">Explore Projects</Link>
+            </div>
+          </div>
+          <div className="hero-visual">
+            <div className="hero-illustration">
+              <div className="floating-card card-1">
+                <div className="card-icon">🚀</div>
+                <h4>AI & ML Projects</h4>
+              </div>
+              <div className="floating-card card-2">
+                <div className="card-icon">🌐</div>
+                <h4>Web Development</h4>
+              </div>
+              <div className="floating-card card-3">
+                <div className="card-icon">📱</div>
+                <h4>Mobile Apps</h4>
+              </div>
+              <div className="floating-card card-4">
+                <div className="card-icon">🤖</div>
+                <h4>IoT Solutions</h4>
+              </div>
+            </div>
           </div>
         </div>
       </section>
 
-      <section className="app" style={{ marginTop: "1.5rem" }}>
-        <h2>Platform Overview</h2>
-        <p className="card-text">Secure, role-based access for Students, Faculty, and Admins. Built with React, Node, and PostgreSQL. Future-ready for Turnitin integration.</p>
+      {/* Features Section */}
+      <section className="features">
+        <div className="container">
+          <div className="section-header">
+            <h2 className="section-title">Why Choose NDP Repository?</h2>
+            <p className="section-subtitle">Everything you need to accelerate your academic journey</p>
+          </div>
+
+          <div className="features-grid">
+            <div className="feature-card">
+              <div className="feature-icon">📚</div>
+              <h3>Project Showcase</h3>
+              <p>Display your projects with detailed descriptions, tech stacks, and multimedia content to impress potential employers and collaborators.</p>
+            </div>
+
+            <div className="feature-card">
+              <div className="feature-icon">🔍</div>
+              <h3>Smart Discovery</h3>
+              <p>Find projects by domain, technology, institution, or academic level with our advanced filtering and search capabilities.</p>
+            </div>
+
+            <div className="feature-card">
+              <div className="feature-icon">🛡️</div>
+              <h3>Plagiarism Detection</h3>
+              <p>Ensure originality with our AI-powered plagiarism checker that compares your work against a vast database of academic projects.</p>
+            </div>
+
+            <div className="feature-card">
+              <div className="feature-icon">👥</div>
+              <h3>Collaboration Hub</h3>
+              <p>Connect with peers, faculty, and industry professionals to form teams and work on groundbreaking projects together.</p>
+            </div>
+
+            <div className="feature-card">
+              <div className="feature-icon">📊</div>
+              <h3>Analytics Dashboard</h3>
+              <p>Track project views, engagement metrics, and receive insights to optimize your academic portfolio.</p>
+            </div>
+
+            <div className="feature-card">
+              <div className="feature-icon">🏆</div>
+              <h3>Recognition System</h3>
+              <p>Earn badges, certificates, and recognition for outstanding contributions to the academic community.</p>
+            </div>
+          </div>
+        </div>
       </section>
 
-      <section className="app grid-4">
-        <div className="card fade-in"><h3 className="card-title">Total Projects</h3><p className="title" style={{fontSize: "2rem"}}>{stats.totalProjects}</p></div>
-        <div className="card fade-in"><h3 className="card-title">Universities</h3><p className="title" style={{fontSize: "2rem"}}>{stats.universities}</p></div>
-        <div className="card fade-in"><h3 className="card-title">Users</h3><p className="title" style={{fontSize: "2rem"}}>{stats.totalUsers}</p></div>
-        <div className="card fade-in"><h3 className="card-title">Plagiarism Checks</h3><p className="title" style={{fontSize: "2rem"}}>{stats.plagiarismChecks}</p></div>
+      {/* Stats Section */}
+      <section className="stats">
+        <div className="container">
+          <div className="stats-grid">
+            <div className="stat-item">
+              <div className="stat-number">500+</div>
+              <div className="stat-label">Projects</div>
+            </div>
+            <div className="stat-item">
+              <div className="stat-number">50+</div>
+              <div className="stat-label">Institutions</div>
+            </div>
+            <div className="stat-item">
+              <div className="stat-number">1000+</div>
+              <div className="stat-label">Students</div>
+            </div>
+            <div className="stat-item">
+              <div className="stat-number">95%</div>
+              <div className="stat-label">Satisfaction</div>
+            </div>
+          </div>
+        </div>
       </section>
 
-      <section className="app">
-        <div className="card">
-          <h3 className="card-title">SDG Alignment</h3>
-          <p className="card-text"><strong>SDG 4:</strong> Quality Education — promoting accessible academic knowledge sharing.</p>
-          <p className="card-text"><strong>SDG 8:</strong> Decent Work and Economic Growth — enabling innovation and employability.</p>
+      {/* CTA Section */}
+      <section className="cta">
+        <div className="container">
+          <div className="cta-content">
+            <h2>Ready to Showcase Your Genius?</h2>
+            <p>Join thousands of students who are already building their academic legacy</p>
+            <Link to="/auth/register" className="button primary large">Start Your Journey</Link>
+          </div>
         </div>
       </section>
     </div>

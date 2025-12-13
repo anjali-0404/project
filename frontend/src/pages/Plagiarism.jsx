@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
+import { API_BASE } from "../api.js";
 
 export default function Plagiarism() {
   const [text, setText] = useState("");
@@ -7,13 +8,23 @@ export default function Plagiarism() {
   const [status, setStatus] = useState("");
 
   async function check() {
+    if (!text.trim()) {
+      setStatus("❌ Please enter some text to check");
+      return;
+    }
+    
     setStatus("Checking...");
+    setScore(null);
     try {
-      const res = await axios.post("http://localhost:7000/api/plagiarism/check", { text });
+      const res = await axios.post(`${API_BASE}/api/plagiarism/check`, { text });
+      console.log("Plagiarism response:", res.data);
       setScore(res.data.score);
-      setStatus("");
-    } catch {
-      setStatus("Error contacting ML service");
+      setStatus("✅ Check completed");
+      setTimeout(() => setStatus(""), 2000);
+    } catch (error) {
+      console.error("Plagiarism check error:", error);
+      const errorMsg = error.response?.data?.message || error.message || "Unknown error";
+      setStatus(`❌ ${errorMsg}`);
     }
   }
 
@@ -27,7 +38,9 @@ export default function Plagiarism() {
       {score != null && (
         <div className="card" style={{ marginTop: "1rem" }}>
           <h3 className="card-title">Originality Report</h3>
-          <p className="card-text">Similarity score: <strong>{score.toFixed(2)}</strong></p>
+          <p className="card-meta">
+            {score < 10 ? "✅ Highly original" : score < 25 ? "⚠️ Mostly original" : "❌ High similarity detected"}
+          </p>
         </div>
       )}
     </div>
